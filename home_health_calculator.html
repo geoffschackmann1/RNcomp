@@ -1,0 +1,653 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Health RN Compensation Calculator</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+            background: #fafbfc;
+            min-height: 100vh;
+            padding: 24px;
+            color: #1a202c;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.02), 0 4px 12px rgba(0,0,0,0.04);
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .header {
+            background: white;
+            color: #1a202c;
+            padding: 32px 32px 24px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 4px;
+            font-weight: 600;
+            letter-spacing: -0.02em;
+        }
+
+        .header p {
+            color: #64748b;
+            font-size: 14px;
+            font-weight: 400;
+        }
+
+        .main-content {
+            display: grid;
+            grid-template-columns: 400px 1fr;
+            min-height: 600px;
+        }
+
+        .input-panel {
+            background: #f8fafc;
+            padding: 32px;
+            border-right: 1px solid #e2e8f0;
+        }
+
+        .results-panel {
+            padding: 32px;
+            background: white;
+        }
+
+        .section {
+            margin-bottom: 24px;
+            background: white;
+            padding: 24px;
+            border-radius: 12px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .section h3 {
+            color: #1a202c;
+            margin-bottom: 20px;
+            font-size: 16px;
+            font-weight: 600;
+            letter-spacing: -0.01em;
+        }
+
+        .input-group {
+            margin-bottom: 16px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 6px;
+            font-weight: 500;
+            color: #374151;
+            font-size: 14px;
+        }
+
+        input, select {
+            width: 100%;
+            padding: 12px 16px;
+            border: 1px solid #d1d5db;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: all 0.2s ease;
+            background: white;
+        }
+
+        input:focus, select:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+
+        .checkbox-group {
+            display: flex;
+            align-items: center;
+            margin-top: 12px;
+            padding: 12px 0;
+        }
+
+        .checkbox-group input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+            accent-color: #3b82f6;
+        }
+
+        .checkbox-group label {
+            margin-bottom: 0;
+            font-size: 14px;
+            color: #374151;
+        }
+
+        .results-card {
+            background: #3b82f6;
+            color: white;
+            padding: 24px;
+            border-radius: 12px;
+            margin-bottom: 24px;
+        }
+
+        .results-card h3 {
+            font-size: 14px;
+            margin-bottom: 8px;
+            color: rgba(255,255,255,0.9);
+            font-weight: 500;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .results-card .amount {
+            font-size: 32px;
+            font-weight: 700;
+            margin: 8px 0 12px;
+            letter-spacing: -0.02em;
+        }
+
+        .breakdown {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 16px;
+            margin-top: 24px;
+        }
+
+        .breakdown-item {
+            background: #f8fafc;
+            padding: 20px;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+            min-height: 80px;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .breakdown-item h4 {
+            color: #64748b;
+            margin-bottom: 8px;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            font-weight: 500;
+            text-align: center;
+        }
+
+        .breakdown-item .value {
+            font-size: 20px;
+            font-weight: 600;
+            color: #1a202c;
+            letter-spacing: -0.01em;
+            text-align: center;
+        }
+
+        .tier-indicator {
+            display: inline-flex;
+            align-items: center;
+            padding: 6px 12px;
+            border-radius: 16px;
+            font-weight: 500;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+        }
+
+        .tier-1 { background: rgba(255, 255, 255, 0.2); color: white; }
+        .tier-2 { background: rgba(255, 255, 255, 0.2); color: white; }
+        .tier-3 { background: rgba(255, 255, 255, 0.2); color: white; }
+
+        .comparison-table {
+            margin-top: 24px;
+            width: 100%;
+            border-collapse: collapse;
+            background: white;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #e2e8f0;
+        }
+
+        .comparison-table th {
+            background: #f8fafc;
+            color: #374151;
+            padding: 16px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            text-align: center;
+        }
+
+        .comparison-table td {
+            padding: 16px;
+            border-bottom: 1px solid #f1f5f9;
+            font-size: 14px;
+            color: #1a202c;
+            text-align: center;
+            vertical-align: middle;
+        }
+
+        .comparison-table td:first-child {
+            text-align: left;
+            font-weight: 500;
+        }
+
+        .comparison-table td:last-child {
+            font-weight: 600;
+            text-align: right;
+        }
+
+        @media (max-width: 768px) {
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .input-panel {
+                border-right: none;
+                border-bottom: 1px solid #e2e8f0;
+            }
+            
+            .breakdown {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        .visit-calculator {
+            background: #f1f5f9;
+            padding: 20px;
+            border-radius: 8px;
+            margin-bottom: 16px;
+            border: 1px solid #e2e8f0;
+        }
+
+        .visit-header {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px;
+            gap: 12px;
+            margin-bottom: 16px;
+            font-weight: 600;
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.05em;
+            color: #64748b;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #e2e8f0;
+        }
+
+        .visit-row {
+            display: grid;
+            grid-template-columns: 1fr 80px 80px;
+            gap: 12px;
+            align-items: center;
+            margin-bottom: 12px;
+            min-height: 44px;
+        }
+
+        .visit-row .visit-type {
+            text-align: left;
+            font-weight: 500;
+            color: #1a202c;
+            padding: 10px 0;
+        }
+
+        .visit-row input {
+            padding: 10px 12px;
+            font-size: 14px;
+            text-align: center;
+            width: 100%;
+            height: 40px;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            background: white;
+        }
+
+        .visit-row .points-display {
+            text-align: center;
+            font-weight: 600;
+            color: #1a202c;
+            font-size: 14px;
+            background: #e2e8f0;
+            padding: 10px;
+            border-radius: 6px;
+            min-height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .total-points {
+            background: #1a202c;
+            color: white;
+            padding: 16px;
+            border-radius: 8px;
+            text-align: center;
+            font-weight: 600;
+            margin-top: 16px;
+            font-size: 14px;
+        }
+
+        .total-points span {
+            font-size: 18px;
+            font-weight: 700;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>Home Health RN Compensation Calculator</h1>
+            <p>Model 1: Performance-Based Tiered Compensation System</p>
+        </div>
+
+        <div class="main-content">
+            <div class="input-panel">
+                <div class="section">
+                    <h3>Visit Calculator</h3>
+                    <div class="visit-calculator">
+                        <div class="visit-header">
+                            <div>Visit Type</div>
+                            <div>Count</div>
+                            <div>Points</div>
+                        </div>
+                        <div class="visit-row">
+                            <div class="visit-type">Start of Care</div>
+                            <input type="number" id="startOfCare" value="2" min="0">
+                            <div class="points-display" id="socPoints">5.0</div>
+                        </div>
+                        <div class="visit-row">
+                            <div class="visit-type">Evaluation</div>
+                            <input type="number" id="evaluation" value="3" min="0">
+                            <div class="points-display" id="evalPoints">5.25</div>
+                        </div>
+                        <div class="visit-row">
+                            <div class="visit-type">Revisit</div>
+                            <input type="number" id="revisit" value="15" min="0">
+                            <div class="points-display" id="revisitPoints">15.0</div>
+                        </div>
+                        <div class="visit-row">
+                            <div class="visit-type">Discharge</div>
+                            <input type="number" id="discharge" value="2" min="0">
+                            <div class="points-display" id="dischargePoints">3.0</div>
+                        </div>
+                        <div class="visit-row">
+                            <div class="visit-type">Case Conference</div>
+                            <input type="number" id="caseConf" value="4" min="0">
+                            <div class="points-display" id="casePoints">2.0</div>
+                        </div>
+                        <div class="total-points">
+                            Total Weekly Points: <span id="totalPoints">30.25</span>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="section">
+                    <h3>Settings</h3>
+                    <div class="input-group">
+                        <label for="weeksWorked">Weeks Worked per Year:</label>
+                        <input type="number" id="weeksWorked" value="52" min="1" max="52">
+                    </div>
+                    <div class="input-group">
+                        <label for="daysWorked">Days Worked This Week:</label>
+                        <input type="number" id="daysWorked" value="5" min="1" max="7">
+                    </div>
+                    <div class="input-group">
+                        <label for="teamAvgPoints">Team Average Points/Week:</label>
+                        <input type="number" id="teamAvgPoints" value="29" min="0" step="0.1">
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="qualityBenchmarks" checked>
+                        <label for="qualityBenchmarks">Team Meets Quality Benchmarks</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="docTimeliness" checked>
+                        <label for="docTimeliness">95%+ Documentation Timeliness</label>
+                    </div>
+                    <div class="checkbox-group">
+                        <input type="checkbox" id="perfectDoc">
+                        <label for="perfectDoc">100% Documentation (12 weeks straight)</label>
+                    </div>
+                    <div class="input-group">
+                        <label for="surgeWeeks">Surge Weeks per Year:</label>
+                        <input type="number" id="surgeWeeks" value="2" min="0" max="4">
+                    </div>
+                </div>
+            </div>
+
+            <div class="results-panel">
+                <div class="results-card">
+                    <h3>Total Annual Compensation</h3>
+                    <div class="amount" id="totalAnnual">$71,600</div>
+                    <div class="tier-indicator" id="tierIndicator">Tier 2</div>
+                </div>
+
+                <div class="breakdown">
+                    <div class="breakdown-item">
+                        <h4>Base Salary</h4>
+                        <div class="value" id="baseSalary">$62,400</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <h4>Individual Bonus</h4>
+                        <div class="value" id="individualBonus">$5,200</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <h4>Team Bonus</h4>
+                        <div class="value" id="teamBonus">$2,500</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <h4>Surge Bonus</h4>
+                        <div class="value" id="surgeBonus">$500</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <h4>Documentation Bonus</h4>
+                        <div class="value" id="docBonus">$250</div>
+                    </div>
+                    <div class="breakdown-item">
+                        <h4>Monthly Take-Home</h4>
+                        <div class="value" id="monthlyPay">$5,966</div>
+                    </div>
+                </div>
+
+                <div class="section" style="margin-top: 20px;">
+                    <h3>Organization Cost Analysis</h3>
+                    <table class="comparison-table">
+                        <thead>
+                            <tr>
+                                <th>Metric</th>
+                                <th>Amount</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>RN Total Compensation</td>
+                                <td id="orgRnComp">$71,600</td>
+                            </tr>
+                            <tr>
+                                <td>Fringe Benefits (17%)</td>
+                                <td id="orgFringe">$12,172</td>
+                            </tr>
+                            <tr>
+                                <td>Total Organization Cost</td>
+                                <td id="orgTotal">$83,772</td>
+                            </tr>
+                            <tr>
+                                <td>Cost Per Point (CPP)</td>
+                                <td id="orgCPP">$55.48</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Point values for each visit type
+        const POINT_VALUES = {
+            startOfCare: 2.5,
+            evaluation: 1.75,
+            revisit: 1,
+            discharge: 1.5,
+            caseConf: 0.5
+        };
+
+        // Base compensation values
+        const BASE_HOURLY = 30;
+        const BASE_ANNUAL = BASE_HOURLY * 40 * 52; // $62,400
+        const FRINGE_RATE = 0.17;
+
+        function calculatePoints() {
+            const startOfCare = parseInt(document.getElementById('startOfCare').value) || 0;
+            const evaluation = parseInt(document.getElementById('evaluation').value) || 0;
+            const revisit = parseInt(document.getElementById('revisit').value) || 0;
+            const discharge = parseInt(document.getElementById('discharge').value) || 0;
+            const caseConf = parseInt(document.getElementById('caseConf').value) || 0;
+
+            const socPoints = startOfCare * POINT_VALUES.startOfCare;
+            const evalPoints = evaluation * POINT_VALUES.evaluation;
+            const revisitPoints = revisit * POINT_VALUES.revisit;
+            const dischargePoints = discharge * POINT_VALUES.discharge;
+            const casePoints = caseConf * POINT_VALUES.caseConf;
+
+            document.getElementById('socPoints').textContent = socPoints.toFixed(2);
+            document.getElementById('evalPoints').textContent = evalPoints.toFixed(2);
+            document.getElementById('revisitPoints').textContent = revisitPoints.toFixed(2);
+            document.getElementById('dischargePoints').textContent = dischargePoints.toFixed(2);
+            document.getElementById('casePoints').textContent = casePoints.toFixed(2);
+
+            const totalPoints = socPoints + evalPoints + revisitPoints + dischargePoints + casePoints;
+            document.getElementById('totalPoints').textContent = totalPoints.toFixed(2);
+
+            return totalPoints;
+        }
+
+        function getTier(points) {
+            if (points >= 31) return 3;
+            if (points >= 26) return 2;
+            if (points >= 21) return 1;
+            return 0;
+        }
+
+        function getIndividualBonus(points, weeksWorked) {
+            let weeklyBonus = 0;
+            
+            if (points >= 21) {
+                // Tier 1: Points 21-25 at $50 each
+                const tier1Points = Math.min(points - 20, 5); // Max 5 points in tier 1 (21-25)
+                weeklyBonus += tier1Points * 50;
+            }
+            
+            if (points >= 26) {
+                // Tier 2: Points 26-30 at $100 each
+                const tier2Points = Math.min(points - 25, 5); // Max 5 points in tier 2 (26-30)
+                weeklyBonus += tier2Points * 100;
+            }
+            
+            if (points >= 31) {
+                // Tier 3: Points 31+ at $150 each
+                const tier3Points = points - 30;
+                weeklyBonus += tier3Points * 150;
+            }
+            
+            return weeklyBonus * weeksWorked;
+        }
+
+        function getTeamBonus(teamAvgPoints, qualityBenchmarks) {
+            let bonus = 0;
+            
+            // Quarterly bonus
+            if (teamAvgPoints >= 28) {
+                bonus += 500 * 4; // $2000 annual
+            }
+            
+            // Annual bonus
+            if (teamAvgPoints >= 30 && qualityBenchmarks) {
+                bonus += 2000;
+            }
+            
+            return bonus;
+        }
+
+        function calculateSurgeBonus(points, daysWorked, surgeWeeks) {
+            const isSurgeWeek = points >= 35 || daysWorked >= 6;
+            if (isSurgeWeek) {
+                return Math.min(surgeWeeks, 4) * 250;
+            }
+            return surgeWeeks * 250; // Use input value
+        }
+
+        function calculateAll() {
+            const points = calculatePoints();
+            const weeksWorked = parseInt(document.getElementById('weeksWorked').value) || 52;
+            const daysWorked = parseInt(document.getElementById('daysWorked').value) || 5;
+            const teamAvgPoints = parseFloat(document.getElementById('teamAvgPoints').value) || 0;
+            const qualityBenchmarks = document.getElementById('qualityBenchmarks').checked;
+            const docTimeliness = document.getElementById('docTimeliness').checked;
+            const perfectDoc = document.getElementById('perfectDoc').checked;
+            const surgeWeeks = parseInt(document.getElementById('surgeWeeks').value) || 0;
+
+            const tier = getTier(points);
+            const individualBonus = docTimeliness ? getIndividualBonus(points, weeksWorked) : 0;
+            const teamBonus = getTeamBonus(teamAvgPoints, qualityBenchmarks);
+            const surgeBonus = docTimeliness ? calculateSurgeBonus(points, daysWorked, surgeWeeks) : 0;
+            const docBonus = perfectDoc ? 1000 : 0; // $250 * 4 quarters
+
+            const totalCompensation = BASE_ANNUAL + individualBonus + teamBonus + surgeBonus + docBonus;
+            const monthlyPay = totalCompensation / 12;
+            const fringe = totalCompensation * FRINGE_RATE;
+            const totalOrgCost = totalCompensation + fringe;
+            const annualPoints = points * weeksWorked;
+            const cpp = annualPoints > 0 ? totalOrgCost / annualPoints : 0;
+
+            // Update display
+            document.getElementById('baseSalary').textContent = `$${BASE_ANNUAL.toLocaleString()}`;
+            document.getElementById('individualBonus').textContent = `$${individualBonus.toLocaleString()}`;
+            document.getElementById('teamBonus').textContent = `$${teamBonus.toLocaleString()}`;
+            document.getElementById('surgeBonus').textContent = `$${surgeBonus.toLocaleString()}`;
+            document.getElementById('docBonus').textContent = `$${docBonus.toLocaleString()}`;
+            document.getElementById('totalAnnual').textContent = `$${totalCompensation.toLocaleString()}`;
+            document.getElementById('monthlyPay').textContent = `$${Math.round(monthlyPay).toLocaleString()}`;
+
+            // Organization costs
+            document.getElementById('orgRnComp').textContent = `$${totalCompensation.toLocaleString()}`;
+            document.getElementById('orgFringe').textContent = `$${Math.round(fringe).toLocaleString()}`;
+            document.getElementById('orgTotal').textContent = `$${Math.round(totalOrgCost).toLocaleString()}`;
+            document.getElementById('orgCPP').textContent = `$${cpp.toFixed(2)}`;
+
+            // Tier indicator
+            const tierIndicator = document.getElementById('tierIndicator');
+            if (tier === 0) {
+                tierIndicator.textContent = 'Below Threshold';
+                tierIndicator.className = 'tier-indicator';
+            } else {
+                tierIndicator.textContent = `Tier ${tier}`;
+                tierIndicator.className = `tier-indicator tier-${tier}`;
+            }
+        }
+
+        // Event listeners
+        document.getElementById('startOfCare').addEventListener('input', calculateAll);
+        document.getElementById('evaluation').addEventListener('input', calculateAll);
+        document.getElementById('revisit').addEventListener('input', calculateAll);
+        document.getElementById('discharge').addEventListener('input', calculateAll);
+        document.getElementById('caseConf').addEventListener('input', calculateAll);
+        document.getElementById('weeksWorked').addEventListener('input', calculateAll);
+        document.getElementById('daysWorked').addEventListener('input', calculateAll);
+        document.getElementById('teamAvgPoints').addEventListener('input', calculateAll);
+        document.getElementById('qualityBenchmarks').addEventListener('change', calculateAll);
+        document.getElementById('docTimeliness').addEventListener('change', calculateAll);
+        document.getElementById('perfectDoc').addEventListener('change', calculateAll);
+        document.getElementById('surgeWeeks').addEventListener('input', calculateAll);
+
+        // Initial calculation
+        calculateAll();
+    </script>
+</body>
+</html>
